@@ -12,17 +12,19 @@ Purpose:
 
 Try it in 3 steps
 
-### create your own docker.env
-`docker run --rm -it drpsychick/docker-dnsmasq:latest --test`
-`docker run --rm -it drpsychick/docker-dnsmasq:latest --export > dnsmasq.env`
+### 1 create your own docker.env
+```
+docker run --rm -it drpsychick/docker-dnsmasq:latest --test
+docker run --rm -it drpsychick/docker-dnsmasq:latest --export > dnsmasq.env
+```
 
-### run and test
+### 2 run it
 Run in a separate teminal
 ```
 docker run --rm -it --cap-add NET_ADMIN --env-file dnsmasq.env --name dnsmasq-1 drpsychick/docker-dnsmasq:latest -k -q --log-facility=-
 ```
 
-Test it
+### 3 test it
 ```
 # test DNS and DHCP
 container_ip=$(docker inspect dnsmasq-1 -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
@@ -33,6 +35,7 @@ sudo ip link add test0 link docker0 type macvlan mode bridge
 sudo dhclient -1 -d -s $container_ip test0
 sudo ip link del test0 link docker0 type macvlan mode bridge
 ```
+
 
 If that ruins your routing because of a new default gateway (check `route -n`):
 ```
@@ -59,7 +62,7 @@ In other words: running DHCP on the ip of the docker container will not work, it
 
 #### dnsmasq.env:
 
-> DMQ_HOST1=192.168.1.1 gateway.local gateway
+> DMQ_DNS_HOST1=gateway,gateway.local,192.168.1.1
 > DMQ_DHCP_GATEWAY=dhcp-option=3,192.168.1.1
 > DMQ_DHCP_RANGES=dhcp-range=192.168.1.110,192.168.1.120,24h
 > DMQ_DHCP_DNS=dhcp-option=6,192.168.1.253,8.8.8.8,8.8.4.4
@@ -113,15 +116,4 @@ Try this:
 sudo ip addr add 192.168.1.253/32 dev eth1
 docker run ... --publish 192.168.1.253:53:53 ... (for every port)
 ```
-
-
-
-
-
-### automate
-- see ansible-galaxy DrPsychick/ansible-docker
-
-
-## Use case: Home DNS+DHCP
-
 
