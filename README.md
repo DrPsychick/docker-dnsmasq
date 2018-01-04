@@ -4,8 +4,8 @@ based on andyshinn/docker-dnsmasq docker image
 
 Purpose:
 * make it fully configurable through environment variables
-** use one image to run them all
-** run stateless, environment configured containers (see https://12factor.net/)
+* use one image to run them all
+* run stateless, environment configured containers (see https://12factor.net/)
 * use primarily to setup DNS/DHCP for simple/home environments
 
 ## Usage
