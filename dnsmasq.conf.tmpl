@@ -1,0 +1,15 @@
+echo -e "$DMQ_GLOBAL"
+echo
+echo "### DMQ_DNS*"
+for v in $(set | grep ^DMQ_DNS| sed -e 's/^\(DMQ_DNS[^=]*\).*/\1/' | sort -r | tr '\n', ' '); do
+  val=$(eval echo "\$$v")
+  [ -z "$v" -o -z "$val" ] && continue
+  echo -e "$val"
+done
+echo
+echo "### DMQ_DHCP*"
+for v in $(set | grep ^DMQ_DHCP | sed -e 's/^\(DMQ_DHCP[^=]*\).*/\1/' | sort -r | tr '\n', ' '); do
+  val=$(eval echo "\$$v")
+  [ -z "$v" -o -z "$val" ] && continue
+  echo -e "$val"
+done
