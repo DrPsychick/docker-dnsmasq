@@ -12,7 +12,7 @@ Purpose:
 
 Try it in 3 steps
 
-### 1 create your own docker.env
+### 1 create your own dnsmasq.env
 ```
 docker run --rm -it drpsychick/docker-dnsmasq:latest --test
 docker run --rm -it drpsychick/docker-dnsmasq:latest --export > dnsmasq.env
@@ -43,14 +43,16 @@ sudo route del -net 172.17.10.0/24 gw 172.10.10.1 dev $docker_interface
 ```
 
 ## Use case: run in local network
-Some additional work is needed in order to run the docker container with an IP from your local subnet and to server request for your subnet.
+Some additional work is needed in order to run the docker container with an IP from your local subnet and to serve requests for your subnet.
 If you don't need DHCP, you can skip most part of it. 
 
-Read:
+Further reading:
+
 http://blog.oddbit.com/2014/08/11/four-ways-to-connect-a-docker/
 https://docs.docker.com/engine/userguide/networking/get-started-macvlan/#macvlan-bridge-mode-example-usage
 
-**Important**
+**Important**:
+
 DHCP will only work if the DHCP range is on the interface it runs on
 In other words: running DHCP on the ip of the docker container will not work, it needs to have an IP on the subnet it will serve DHCP requests on
 
@@ -62,10 +64,12 @@ In other words: running DHCP on the ip of the docker container will not work, it
 
 #### dnsmasq.env:
 
-> DMQ_DNS_HOST1=gateway,gateway.local,192.168.1.1
-> DMQ_DHCP_GATEWAY=dhcp-option=3,192.168.1.1
-> DMQ_DHCP_RANGES=dhcp-range=192.168.1.110,192.168.1.120,24h
-> DMQ_DHCP_DNS=dhcp-option=6,192.168.1.253,8.8.8.8,8.8.4.4
+```
+DMQ_DNS_HOST1=gateway,gateway.local,192.168.1.1
+DMQ_DHCP_GATEWAY=dhcp-option=3,192.168.1.1
+DMQ_DHCP_RANGES=dhcp-range=192.168.1.110,192.168.1.120,24h
+DMQ_DHCP_DNS=dhcp-option=6,192.168.1.253,8.8.8.8,8.8.4.4
+```
 
 test configuration:
 `docker run --rm -it --env-file dnsmasq.env drpsychick/docker-dnsmasq:latest --test`
