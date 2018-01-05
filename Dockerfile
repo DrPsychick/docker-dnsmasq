@@ -1,4 +1,4 @@
-FROM andyshinn/dnsmasq:2.76
+FROM andyshinn/dnsmasq:2.78
 
 COPY envreplace.sh /
 COPY dnsmasq.conf.tmpl /
