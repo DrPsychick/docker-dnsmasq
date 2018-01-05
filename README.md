@@ -1,6 +1,6 @@
 # docker-dnsmasq
 
-based on andyshinn/docker-dnsmasq docker image
+based on andyshinn/dnsmasq docker image
 
 Purpose:
 * make it fully configurable through environment variables
@@ -50,6 +50,7 @@ Further reading:
 
 http://blog.oddbit.com/2014/08/11/four-ways-to-connect-a-docker/
 https://docs.docker.com/engine/userguide/networking/get-started-macvlan/#macvlan-bridge-mode-example-usage
+https://blog.docker.com/2016/12/understanding-docker-networking-drivers-use-cases/
 
 **Important**:
 
@@ -60,7 +61,7 @@ In other words: running DHCP on the ip of the docker container will not work, it
 * 192.168.1.253 IP of the DNS/DHCP server
 * 192.168.1.1   IP of the gateway
 * 192.168.1.110-120 is an unused range of IPs
-* eth0 is the network device on the local subnet
+* eth1 is the network device on the local subnet
 
 #### dnsmasq.env:
 
