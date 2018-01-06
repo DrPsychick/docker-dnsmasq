@@ -4,9 +4,8 @@ set -e
 # sane defaults for docker environment
 
 DMQ_GLOBAL=${DMQ_GLOBAL:-""}
-DMQ_DNS=${DMQ_DNS:-""}
 DMQ_DNS_RESOLV=${DMQ_DNS_RESOLV:-"no-resolv"}
-DMQ_DNS_HOST1=${DMQ_DNS_HOSTS:-"host-record=gateway,gateway.local,172.17.10.1"}
+# DMQ_DNS_HOST1=${DMQ_DNS_HOST1:-"host-record=gateway,gateway.local,172.17.10.1"}
 DMQ_DNS_SERVER=${DMQ_DNS_SERVER:-"server=8.8.8.8\nserver=8.8.4.4"}
 DMQ_DNS_ADDRESS=${DMQ_DNS_ADDRESS:-""}
 DMQ_DNS_LOCAL=${DMQ_DNS_LOCAL:-"local=/local/"}
@@ -17,14 +16,12 @@ DMQ_DNS_TXT=${DMQ_DNS_TXT:-""}
 DMQ_DNS_ALIAS=${DMQ_ALIAS:-""}
 DMQ_DNS_CNAME=${DMQ_DNS_CNAME:-""}
 
-DMQ_DHCP=${DMQ_DHCP:-""}
-DMQ_DHCP_OPTIONS=${DMQ_DHCP_OPTIONS:-""}
 DMQ_DHCP_GATEWAY=${DMQ_DHCP_GATEWAY:-"dhcp-option=3,172.17.10.1"}
 DMQ_DHCP_DNS=${DMQ_DHCP_DNS:-"dhcp-option=6,172.17.10.1,8.8.8.8,8.8.4.4"}
 DMQ_DHCP_WINS=${DMQ_DHCP_WINS:-"# dhcp-option=44,172.17.10.1"}
 DMQ_DHCP_RANGES=${DMQ_DHCP_RANGES:-"dhcp-range=172.17.10.10,172.17.10.100,24h"}
-DMQ_DHCP_HOST1=${DMQ_DHCP_HOST1:-"dhcp-host=00:00:00:00:00:00,myhost,172.17.10.2,infinite"}
-DMQ_DHCP_HOST2=${DMQ_DHCP_HOST2:-"dhcp-host=myhost2,172.17.10.3,infinite"}
+#DMQ_DHCP_HOST1=${DMQ_DHCP_HOST1:-"dhcp-host=00:00:00:00:00:00,myhost,172.17.10.2,infinite"}
+#DMQ_DHCP_HOST2=${DMQ_DHCP_HOST2:-"dhcp-host=myhost2,172.17.10.3,infinite"}
 
 DMQ_DHCP_PXE=${DMQ_PXE:-""}
 DMQ_DHCP_TFTP=${DMQ_TFTP:-""}
