@@ -27,17 +27,21 @@ DMQ_DHCP_PXE=${DMQ_PXE:-""}
 DMQ_DHCP_TFTP=${DMQ_TFTP:-""}
 
 # generate configuration files from templates
-eval "$(cat dnsmasq.conf.tmpl)" > /etc/dnsmasq.conf
+var_prefix="DMQ_"
+conf_file=/etc/dnsmasq.conf
+conf_tmpl=/dnsmasq.conf.tmpl
+
+eval "$(cat $conf_tmpl)" > $conf_file
 
 if [ "$1" = "--test" ]; then
-  echo "/etc/dnsmasq.conf:"
+  echo "$conf_file:"
   echo "=================="
-  cat /etc/dnsmasq.conf
+  cat $conf_file
   echo
 
   echo "Variables:"
   echo "=========="
-  for v in $(set |grep ^DMQ|sed -e 's/^\(DMQ_[^=]*\).*/\1/' |sort -r |tr '\n' ' ' ); do
+  for v in $(set |grep ^${var_prefix}|sed -e 's/^\(${var_prefix}[^=]*\).*/\1/' |sort |tr '\n' ' ' ); do
     [ -z "$v" ] && continue
     value=$(eval echo -n \""\$$v"\")
     echo -e "$v=\"$value\""
@@ -47,8 +51,8 @@ fi
 
 # export variables suitable for input for --env-file
 if [ "$1" = "--export" ]; then
-  # fetch all defined DMQ_ variables
-  for v in $(set |grep ^DMQ|sed -e 's/^\(DMQ_[^=]*\).*/\1/' |sort -r |tr '\n' ' '); do
+  # fetch all defined ${var_prefix} variables
+  for v in $(set |grep ^${var_prefix}|sed -e 's/^\(${var_prefix}[^=]*\).*/\1/' |sort |tr '\n' ' '); do
     [ -z "$v" ] && continue
     # get value and replace all newlines with \n (docker only supports single line variables)
     value=$(eval echo -n \""\$$v"\")
