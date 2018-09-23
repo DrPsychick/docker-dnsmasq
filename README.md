@@ -1,4 +1,4 @@
-# docker-dnsmasq
+# [Docker image: docker-dnsmasq](https://hub.docker.com/r/drpsychick/docker-dnsmasq/)
 
 [![DockerHub build status](https://img.shields.io/docker/build/drpsychick/docker-dnsmasq.svg)](https://hub.docker.com/r/drpsychick/docker-dnsmasq/builds/) [![DockerHub build](https://img.shields.io/docker/automated/drpsychick/docker-dnsmasq.svg)](https://hub.docker.com/r/drpsychick/docker-dnsmasq/builds/) [![license](https://img.shields.io/github/license/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/blob/master/LICENSE) [![DockerHub pulls](https://img.shields.io/docker/pulls/drpsychick/docker-dnsmasq.svg)](https://hub.docker.com/r/drpsychick/docker-dnsmasq/) [![DockerHub stars](https://img.shields.io/docker/stars/drpsychick/docker-dnsmasq.svg)](https://hub.docker.com/r/drpsychick/docker-dnsmasq/) [![GitHub stars](https://img.shields.io/github/stars/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq) [![Contributors](https://img.shields.io/github/contributors/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/graphs/contributors)
 
