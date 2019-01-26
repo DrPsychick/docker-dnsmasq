@@ -8,7 +8,7 @@ env:
   - ALPINE_VERSION=edge
   - ALPINE_VERSION=3.8
   - ALPINE_VERSION=3.7
-  - ALPINE_VERSION=3.5
+  - ALPINE_VERSION=3.6
 
 before_script:
   - docker build -t dnsmasq-test --build-arg ALPINE_VERSION=$ALPINE_VERSION .
@@ -33,7 +33,7 @@ script:
 after_success:
   # tag = $dnsmasq_version-alpine$alpine_version (e.g. 2.80-alpine2.8.0)
   - >
-    test $TRAVIS_BRANCH = "master" && {
+    [ $TRAVIS_BRANCH = "master" -a $TRAVIS_PULL_REQUEST = "false" ] && {
     if [ "$ALPINE_VERSION" == "edge" ]; then branch="$VERSION"; else branch="${VERSION}-alpine${ALPINE_VERSION}"; fi;
     exists="$(test -n "$(git branch -r |grep "$branch")" && echo "exists" || echo "missing")";
     echo "Branch: $branch ($exists)";
