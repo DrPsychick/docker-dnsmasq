@@ -18,6 +18,7 @@ before_script:
   - echo "$DEPLOY_PRIVATE_KEY" | ssh-add - && ssh-add -l
   - git config --global user.email "github@drsick.net"
   - git config --global user.name "TAG bot"
+  - git remote set-url origin "git@github.com:DrPsychick/docker-dnsmasq.git"
 
 
 script:
@@ -38,7 +39,7 @@ after_success:
     echo "Branch: $branch ($exists)";
     if [ "$exists" == "missing" ]; then 
     git checkout -b $branch;
-    sed -i -e "s/ALPINE_VERION=.*/ALPINE_VERSION=$ALPINE_VERSION/" Dockerfile;
+    sed -i -e "s/ALPINE_VERSION=.*/ALPINE_VERSION=$ALPINE_VERSION/" Dockerfile;
     git diff Dockerfile;
     docker build -t $IMAGE:$branch --build-arg ALPINE_VERSION=$ALPINE_VERSION . || exit 1;
     git add Dockerfile && git commit -m "automated tag branch $branch" && git push -u origin $branch;
