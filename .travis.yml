@@ -2,6 +2,8 @@ language: bash
 services: docker
 
 env:
+  global:
+  - IMAGE=drpsychick/docker-dnsmasq
   matrix:
   - ALPINE_VERSION=edge
   - ALPINE_VERSION=3.8
@@ -37,12 +39,14 @@ script:
 # Option C: use github deploy keys -> SSH keys, per repo -> best security, scales
 after_success:
   # tag = $dnsmasq_version-alpine$alpine_version (e.g. 2.80-alpine2.8.0)
+    #test $TRAVIS_BRANCH = "master" && {
   - >
-    test $TRAVIS_BRANCH = "master" && {
     if [ "$ALPINE_VERSION" == "edge" ]; then branch="$VERSION"; else branch="${VERSION}-alpine${ALPINE_VERSION}"; fi;
     exists="$(test -n "$(git branch -r |grep "$branch")" && echo "yes")";
     echo "Branch: $branch ($exists)";
-    echo 'git branch $branch;
+    git branch $branch;
     sed -i -e "s/ALPINE_VERION=.*/ALPINE_VERSION=$ALPINE_VERSION/" Dockerfile;
-    docker build -t $branch --build-arg ALPINE_VERSION=$ALPINE_VERSION .';
-    }
+    docker build -t $IMAGE:$branch --build-arg ALPINE_VERSION=$ALPINE_VERSION .;
+    docker run --rm --entrypoint /bin/sh $IMAGE:$branch -c 'cat /etc/alpine-release; dnsmasq --version';
+    cat Dockerfile;
+    git branch;
