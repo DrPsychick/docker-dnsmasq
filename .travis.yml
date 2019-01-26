@@ -15,7 +15,7 @@ before_script:
   - VERSION=$(docker run --rm dnsmasq-test --version |awk '$2 == "version" { print $3; exit }')
   #- alpine_version=$(docker run --rm --entrypoint cat dnsmasq-test /etc/alpine-release)
   - eval $(ssh-agent -s)
-  - echo $DEPLOY_PRIVATE_KEY | ssh-add - && ssh-add -l
+  - echo "$DEPLOY_PRIVATE_KEY" | ssh-add - && ssh-add -l
   - git config --global user.email "github@drsick.net"
   - git config --global user.name "TAG bot"
 
