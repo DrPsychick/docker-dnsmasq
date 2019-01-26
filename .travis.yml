@@ -1,0 +1,24 @@
+services:
+  - docker
+
+before_script:
+  - docker build -t dnsmasq-test .
+  - version=$(docker run --rm dnsmasq-test --version |awk '$2 == "version" { print $3; exit }')
+  - alpine_version=$(docker run --rm --entrypoint cat dnsmasq-test /etc/alpine-release)
+
+script:
+  # test always passes
+  - echo "Alpine $alpine_version Dnsmasq $version"
+  - docker run dnsmasq-test --version
+
+after_script:
+  # trigger dockerhub build (only for master)
+  # misuse travis-ci cron to keep latest docker image up to date
+  - >
+    if [ "$(git rev-parse --abbrev-ref HEAD)" == "master" ]; then
+      curl -X POST https://registry.hub.docker.com/u/drpsychick/docker-dnsmasq/trigger/6e83bd51-dd01-441b-b233-825656b8a8f2/;
+    fi
+
+
+
+
