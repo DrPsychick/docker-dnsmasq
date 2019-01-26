@@ -1,8 +1,7 @@
-FROM andyshinn/dnsmasq:2.78
+FROM alpine:edge
+RUN apk --no-cache add dnsmasq
 
-COPY envreplace.sh /
-COPY dnsmasq.conf.tmpl /
-
+COPY envreplace.sh dnsmasq.conf.tmpl /
 RUN chmod +x /envreplace.sh
 
 EXPOSE 53 53/udp 67/udp

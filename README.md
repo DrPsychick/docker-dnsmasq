@@ -4,7 +4,7 @@
 
 [![GitHub issues](https://img.shields.io/github/issues/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/issues?q=is%3Aissue+is%3Aclosed) [![GitHub pull requests](https://img.shields.io/github/issues-pr/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/pulls) [![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/pulls?q=is%3Apr+is%3Aclosed)
 
-based on andyshinn/dnsmasq docker image
+NO LONGER based on andyshinn/dnsmasq docker image, as his images are outdated :(
 
 Purpose:
 * make it fully configurable through environment variables
