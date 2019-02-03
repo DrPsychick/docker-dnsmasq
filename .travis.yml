@@ -1,3 +1,4 @@
+dist: xenial
 language: bash
 services: docker
 
@@ -8,7 +9,7 @@ env:
   - ALPINE_VERSION=edge
   - ALPINE_VERSION=3.8
   - ALPINE_VERSION=3.7
-  - ALPINE_VERSION=3.5
+  - ALPINE_VERSION=3.6
 
 before_script:
   - docker build -t dnsmasq-test --build-arg ALPINE_VERSION=$ALPINE_VERSION .
@@ -27,14 +28,26 @@ script:
   - >
     echo "Running tests...";
     docker run dnsmasq-test --version
+
 # Option A: use docker login credentials in travis -> docker images can be compromised, only one 'master' user! -> does not scale
 # Option B: use github token -> separate, restricted access, but public repos can be compromised -> more complicated, but scales
 # Option C: use github deploy keys -> SSH keys, per repo -> best security, scales
 after_success:
+  - >
+    if [ "$TRAVIS_BRANCH" = "develop" -a "$ALPINE_VERSION" = "edge" ]; then
+    curl -H "Content-Type: application/json" --data '{"source_type": "Branch", "source_name": "develop"}'
+    -X POST "$DOCKERHUB_TRIGGER";
+    fi
   # tag = $dnsmasq_version-alpine$alpine_version (e.g. 2.80-alpine2.8.0)
   - >
-    test $TRAVIS_BRANCH = "master" && {
-    if [ "$ALPINE_VERSION" == "edge" ]; then branch="$VERSION"; else branch="${VERSION}-alpine${ALPINE_VERSION}"; fi;
+    if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    if [ "$ALPINE_VERSION" = "edge" ]; then
+    branch="$VERSION";
+    curl -H "Content-Type: application/json" --data '{"source_type": "Branch", "source_name": "master"}'
+    -X POST "$DOCKERHUB_TRIGGER";
+    else
+    branch="${VERSION}-alpine${ALPINE_VERSION}";
+    fi
     exists="$(test -n "$(git branch -r |grep "$branch")" && echo "exists" || echo "missing")";
     echo "Branch: $branch ($exists)";
     if [ "$exists" == "missing" ]; then
@@ -44,5 +57,5 @@ after_success:
     docker build -t $IMAGE:$branch --build-arg ALPINE_VERSION=$ALPINE_VERSION . || exit 1;
     git add Dockerfile && git commit -m "automated tag branch $branch" && git push -u origin $branch;
     git tag $branch && git push --tags;
+    fi;
     fi
-    }
