@@ -126,3 +126,7 @@ sudo ip addr add 192.168.1.253/32 dev eth1
 docker run ... --publish 192.168.1.253:53:53 ... (for every port)
 ```
 
+# Credits
+Automated build inspired by
+* https://medium.com/vaidikkapoor/managing-open-source-docker-images-on-docker-hub-using-travis-7fd33bc96d65
+* https://medium.com/mobileforgood/coding-tips-patterns-for-continuous-integration-with-docker-on-travis-ci-9cedb8348a62
