@@ -3,7 +3,7 @@ FROM alpine:$ALPINE_VERSION
 RUN apk --no-cache add dnsmasq
 
 COPY envreplace.sh dnsmasq.conf.tmpl healthcheck.sh /
-RUN chmod +x /envreplace.sh
+RUN chmod +x /envreplace.sh /healthcheck.sh
 
 EXPOSE 53 53/udp 67/udp
 
