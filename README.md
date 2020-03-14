@@ -1,6 +1,6 @@
-# [Docker image: docker-dnsmasq](https://hub.docker.com/r/drpsychick/docker-dnsmasq/)
+# [Docker image: dnsmasq](https://hub.docker.com/r/drpsychick/dnsmasq/)
 
-[![DockerHub build status](https://img.shields.io/docker/build/drpsychick/docker-dnsmasq.svg)](https://hub.docker.com/r/drpsychick/docker-dnsmasq/builds/) [![DockerHub build](https://img.shields.io/docker/automated/drpsychick/docker-dnsmasq.svg)](https://hub.docker.com/r/drpsychick/docker-dnsmasq/builds/) [![license](https://img.shields.io/github/license/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/blob/master/LICENSE) [![DockerHub pulls](https://img.shields.io/docker/pulls/drpsychick/docker-dnsmasq.svg)](https://hub.docker.com/r/drpsychick/docker-dnsmasq/) [![DockerHub stars](https://img.shields.io/docker/stars/drpsychick/docker-dnsmasq.svg)](https://hub.docker.com/r/drpsychick/docker-dnsmasq/) [![GitHub stars](https://img.shields.io/github/stars/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq) [![Contributors](https://img.shields.io/github/contributors/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/graphs/contributors)
+[![DockerHub build status](https://img.shields.io/docker/build/drpsychick/dnsmasq.svg)](https://hub.docker.com/r/drpsychick/dnsmasq/builds/) [![DockerHub build](https://img.shields.io/docker/automated/drpsychick/dnsmasq.svg)](https://hub.docker.com/r/drpsychick/dnsmasq/builds/) [![license](https://img.shields.io/github/license/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/blob/master/LICENSE) [![DockerHub pulls](https://img.shields.io/docker/pulls/drpsychick/dnsmasq.svg)](https://hub.docker.com/r/drpsychick/dnsmasq/) [![DockerHub stars](https://img.shields.io/docker/stars/drpsychick/dnsmasq.svg)](https://hub.docker.com/r/drpsychick/dnsmasq/) [![GitHub stars](https://img.shields.io/github/stars/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq) [![Contributors](https://img.shields.io/github/contributors/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/graphs/contributors)
 
 [![GitHub issues](https://img.shields.io/github/issues/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/issues?q=is%3Aissue+is%3Aclosed) [![GitHub pull requests](https://img.shields.io/github/issues-pr/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/pulls) [![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/drpsychick/docker-dnsmasq.svg)](https://github.com/drpsychick/docker-dnsmasq/pulls?q=is%3Apr+is%3Aclosed)
 
@@ -18,14 +18,14 @@ Try it in 3 steps
 
 ### 1 create your own dnsmasq.env
 ```
-docker run --rm -it drpsychick/docker-dnsmasq:latest --test
-docker run --rm -it drpsychick/docker-dnsmasq:latest --export > dnsmasq.env
+docker run --rm -it drpsychick/dnsmasq:latest --test
+docker run --rm -it drpsychick/dnsmasq:latest --export > dnsmasq.env
 ```
 
 ### 2 run it
 Run in a separate teminal
 ```
-docker run --rm -it --cap-add NET_ADMIN --env-file dnsmasq.env --name dnsmasq-1 drpsychick/docker-dnsmasq:latest -k -q --log-facility=-
+docker run --rm -it --cap-add NET_ADMIN --env-file dnsmasq.env --name dnsmasq-1 drpsychick/dnsmasq:latest -k -q --log-facility=-
 ```
 
 ### 3 test it
@@ -77,7 +77,7 @@ DMQ_DHCP_DNS=dhcp-option=6,192.168.1.253,8.8.8.8,8.8.4.4
 ```
 
 test configuration:
-`docker run --rm -it --env-file dnsmasq.env drpsychick/docker-dnsmasq:latest --test`
+`docker run --rm -it --env-file dnsmasq.env drpsychick/dnsmasq:latest --test`
 
 #### Network
 To run the container with an IP from the local subnet, we need the "macvlan" driver. 
@@ -95,7 +95,7 @@ docker network create --driver macvlan --subnet 192.168.1.0/24 --gateway 192.168
 
 #### Run in a separate shell:
 ```
-docker run --rm -it --net local-net --ip 192.168.1.253 --cap-add NET_ADMIN --env-file dnsmasq.env --publish 53:53 --publish 53:53/udp --publish 67:67/udp --name dnsmasq-1 drpsychick/docker-dnsmasq:latest -k -q --log-facility=-
+docker run --rm -it --net local-net --ip 192.168.1.253 --cap-add NET_ADMIN --env-file dnsmasq.env --publish 53:53 --publish 53:53/udp --publish 67:67/udp --name dnsmasq-1 drpsychick/dnsmasq:latest -k -q --log-facility=-
 ```
 
 #### Test it
@@ -111,7 +111,7 @@ sudo ip link del mac1
 ```
 # run it
 # Same "run" command as above, but with "-d" and "--restart always" instead of "--rm -it" (run as daemon)
-docker run -d --net local-net --ip 192.168.1.253 --cap-add NET_ADMIN --env-file dnsmasq.env --restart always --publish 53:53 --publish 53:53/udp --publish 67:67/udp --name dnsmasq-1 drpsychick/docker-dnsmasq:latest -k -q --log-facility=-
+docker run -d --net local-net --ip 192.168.1.253 --cap-add NET_ADMIN --env-file dnsmasq.env --restart always --publish 53:53 --publish 53:53/udp --publish 67:67/udp --name dnsmasq-1 drpsychick/dnsmasq:latest -k -q --log-facility=-
 
 # watch it
 docker attach --sig-proxy=false dnsmasq-1
