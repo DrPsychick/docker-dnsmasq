@@ -110,7 +110,7 @@ sudo ip link del mac1
 #### All good, now lets see it in production:
 ```
 # run it
-Same "run" command as above, but with "-d" and "--restart always" instead of "--rm -it" (run as daemon)
+# Same "run" command as above, but with "-d" and "--restart always" instead of "--rm -it" (run as daemon)
 docker run -d --net local-net --ip 192.168.1.253 --cap-add NET_ADMIN --env-file dnsmasq.env --restart always --publish 53:53 --publish 53:53/udp --publish 67:67/udp --name dnsmasq-1 drpsychick/docker-dnsmasq:latest -k -q --log-facility=-
 
 # watch it
