@@ -27,7 +27,7 @@ if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
     export VERSION=$(docker run --rm $IMAGE --version |head -n1 |sed -e 's/Dnsmasq version \([0-9.]*\) *Copyright.*/\1/')
 
     # build for all platforms again and push with correct version tag
-    echo "build and push docker image(s) for version $IMAGE:$ALPINE_VERSION-$VERSION (platforms $PLATFORMS)"
+    echo "build and push docker image(s) for version $IMAGE:$VERSION-alpine$ALPINE_VERSION (platforms $PLATFORMS)"
     docker buildx build --progress plain --platform $PLATFORMS --build-arg ALPINE_VERSION=$ALPINE_VERSION \
       -t $IMAGE:$VERSION-alpine$ALPINE_VERSION --push .
   fi
