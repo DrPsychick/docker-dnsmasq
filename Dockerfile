@@ -2,7 +2,7 @@ ARG ALPINE_VERSION=edge
 FROM alpine:$ALPINE_VERSION
 RUN apk --no-cache add dnsmasq
 
-COPY envreplace.sh dnsmasq.conf.tmpl healthcheck.sh /
+COPY envreplace.sh dnsmasq.conf.tmpl healthcheck.sh default.env /
 RUN chmod +x /envreplace.sh /healthcheck.sh
 
 EXPOSE 53 53/udp 67/udp
