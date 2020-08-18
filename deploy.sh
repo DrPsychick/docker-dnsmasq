@@ -16,7 +16,7 @@ fi
 # push master images (not when it's a pull request)
 if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
   # tag including ALPINE version
-  if [ "$ALPINE_VERSION" = "alpine" ]; then
+  if [ "$ALPINE_VERSION" = "latest" ]; then
     echo "build and push docker image(s) for version $IMAGE:latest (platforms $PLATFORMS)"
     docker buildx build --progress plain --platform $PLATFORMS --build-arg ALPINE_VERSION=$ALPINE_VERSION \
       -t $IMAGE:latest --push .
