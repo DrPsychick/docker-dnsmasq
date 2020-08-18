@@ -1,47 +1,29 @@
 #!/bin/sh
 set -e
 
-# sane defaults for docker environment
-
-DMQ_GLOBAL=${DMQ_GLOBAL:-""}
-DMQ_DNS_RESOLV=${DMQ_DNS_RESOLV:-"no-resolv"}
-# DMQ_DNS_HOST1=${DMQ_DNS_HOST1:-"host-record=gateway,gateway.local,172.17.10.1"}
-DMQ_DNS_SERVER=${DMQ_DNS_SERVER:-"server=8.8.8.8\nserver=8.8.4.4"}
-DMQ_DNS_ADDRESS=${DMQ_DNS_ADDRESS:-""}
-DMQ_DNS_LOCAL=${DMQ_DNS_LOCAL:-"local=/local/"}
-DMQ_DNS_DOMAIN=${DMQ_DNS_DOMAIN:-"domain=local"}
-DMQ_DNS_FLAGS=${DMQ_DNS_FLAGS:-"expand-hosts\ndomain-needed\nselfmx\ndns-loop-detect"}
-DMQ_DNS_SRV=${DMQ_DNS_SRV:-""}
-DMQ_DNS_TXT=${DMQ_DNS_TXT:-""}
-DMQ_DNS_ALIAS=${DMQ_ALIAS:-""}
-DMQ_DNS_CNAME=${DMQ_DNS_CNAME:-""}
-
-DMQ_DHCP_GATEWAY=${DMQ_DHCP_GATEWAY:-"dhcp-option=3,172.17.10.1"}
-DMQ_DHCP_DNS=${DMQ_DHCP_DNS:-"dhcp-option=6,172.17.10.1,8.8.8.8,8.8.4.4"}
-DMQ_DHCP_WINS=${DMQ_DHCP_WINS:-"# dhcp-option=44,172.17.10.1"}
-DMQ_DHCP_RANGES=${DMQ_DHCP_RANGES:-"dhcp-range=172.17.10.10,172.17.10.100,24h"}
-#DMQ_DHCP_HOST1=${DMQ_DHCP_HOST1:-"dhcp-host=00:00:00:00:00:00,myhost,172.17.10.2,infinite"}
-#DMQ_DHCP_HOST2=${DMQ_DHCP_HOST2:-"dhcp-host=myhost2,172.17.10.3,infinite"}
-
-DMQ_DHCP_PXE=${DMQ_PXE:-""}
-DMQ_DHCP_TFTP=${DMQ_TFTP:-""}
+. default.env
 
 # generate configuration files from templates
-var_prefix="DMQ_"
-conf_file=/etc/dnsmasq.conf
-conf_tmpl=/dnsmasq.conf.tmpl
-
-eval "$(cat $conf_tmpl)" > $conf_file
+for tmpl in ${conf_templates}; do
+  # do not generate config, if file or directory is mounted into the container
+  if [ -n "$(mount | grep ${tmpl#*:})" -o -n "$(mount | grep $(basename ${tmpl#*:}))" ]; then
+      echo "NOT overwriting mounted configuration file: ${tmpl#*:}"
+      continue
+  fi
+  eval "$(cat ${tmpl%:*})" > ${tmpl#*:}
+done
 
 if [ "$1" = "--test" ]; then
-  echo "$conf_file:"
-  echo "=================="
-  cat $conf_file
-  echo
+  for tmpl in ${conf_templates}; do
+    echo "${tmpl#*:}:"
+    echo "=================="
+    cat ${tmpl#*:}
+    echo
+  done
 
   echo "Variables:"
   echo "=========="
-  for v in $(set |grep ^${var_prefix}|sed -e 's/^\(${var_prefix}[^=]*\).*/\1/' |sort |tr '\n' ' ' ); do
+  for v in $(set |grep ^${conf_var_prefix}|sed -e 's/^\('${conf_var_prefix}'[^=]*\).*/\1/' |sort |tr '\n' ' ' ); do
     [ -z "$v" ] && continue
     value=$(eval echo -n \""\$$v"\")
     echo -e "$v=\"$value\""
@@ -51,8 +33,8 @@ fi
 
 # export variables suitable for input for --env-file
 if [ "$1" = "--export" ]; then
-  # fetch all defined ${var_prefix} variables
-  for v in $(set |grep ^${var_prefix}|sed -e 's/^\(${var_prefix}[^=]*\).*/\1/' |sort |tr '\n' ' '); do
+  # fetch all defined ${conf_var_prefix} variables
+  for v in $(set |grep ^${conf_var_prefix}|sed -e 's/^\('${conf_var_prefix}'[^=]*\).*/\1/' |sort |tr '\n' ' '); do
     [ -z "$v" ] && continue
     # get value and replace all newlines with \n (docker only supports single line variables)
     value=$(eval echo -n \""\$$v"\")
