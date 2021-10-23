@@ -8,6 +8,8 @@ addons:
     sources:
       - sourceline: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable'
         key_url: 'https://download.docker.com/linux/ubuntu/gpg'
+    packages:
+      - docker-ce
     update: true
 
 env:
@@ -24,11 +26,11 @@ env:
 
 before_script:
   # upgrade to latest docker-ce from repo
-  - sudo apt-get -y install docker-ce
+  - sudo apt-get -y upgrade docker-ce
   # enable experimental in docker daemon
   - docker_conf=$(sudo cat /etc/docker/daemon.json |jq '. + {"experimental":"enabled"}')
   - echo "$docker_conf" | sudo tee /etc/docker/daemon.json
-  - sudo service docker start
+  - sudo systemctl reload-or-restart docker.service || sudo systemctl status docker.service
   - docker version
   - docker buildx version
   # build the image for all platforms
