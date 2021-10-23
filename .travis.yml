@@ -1,6 +1,8 @@
 dist: bionic
 os: linux
 language: bash
+services:
+  - docker
 addons:
   apt:
     sources:
@@ -15,9 +17,9 @@ env:
     - DOCKER_CLI_EXPERIMENTAL=enabled
   jobs:
     - ALPINE_VERSION=latest
+    - ALPINE_VERSION=3.13
     - ALPINE_VERSION=3.12
     - ALPINE_VERSION=3.11
-    - ALPINE_VERSION=3.10
     - ALPINE_VERSION=3
 
 before_script:
