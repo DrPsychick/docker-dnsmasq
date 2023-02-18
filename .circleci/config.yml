@@ -58,9 +58,9 @@ aliases:
             --tag $IMAGE:$TAG .
           
           # build & load amd64
-          docker buildx build--progress plain --platform linux/amd64 \
+          docker buildx build --progress plain --platform linux/amd64 \
             --build-arg ALPINE_VERSION=<< parameters.alpine_version >> \
-            --tag $IMAGE:$TAG --load  .
+            --tag $IMAGE:$TAG --load .
           
           # get dnsmasq version
           export DNSMASQ_VERSION=$(docker run --rm $IMAGE:$TAG --version |head -n1 |sed -e 's/Dnsmasq version \([0-9.]*\) *Copyright.*/\1/')
@@ -70,9 +70,9 @@ aliases:
           if [ "${CIRCLE_BRANCH}" != "master" ]; then export TAG=${TAG}-dev; fi
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin &> /dev/null || exit 1
           echo "Pushing $IMAGE:$TAG..."
-          docker buildx build--progress plain --platform << parameters.platforms >> \
+          docker buildx build --progress plain --platform << parameters.platforms >> \
             --build-arg ALPINE_VERSION=<< parameters.alpine_version >> \
-            --tag $IMAGE:$TAG --push  .
+            --tag $IMAGE:$TAG --push .
 
 jobs:
   buildx:
