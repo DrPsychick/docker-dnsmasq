@@ -33,7 +33,7 @@ aliases:
     - run:
         name: Install buildx
         command: |
-          apk add --no-cache curl
+          apk add --no-cache curl git
           mkdir -p ~/.docker/cli-plugins
           fileName="buildx-<< parameters.buildx_version >>.linux-amd64"
           url="<< parameters.buildx_url >>/download/<< parameters.buildx_version >>/${fileName}"
