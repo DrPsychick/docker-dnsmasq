@@ -1,0 +1,136 @@
+# Required ENV variables
+# DOCKER_USER, DOCKER_PASS
+version: 2.1
+aliases:
+  - &parameters
+    alpine_version:
+      default: latest
+      type: string
+    buildx_url:
+      default: https://github.com/docker/buildx/releases
+      type: string
+    buildx_version:
+      default: v0.10.2 # github-releases:docker/buildx
+      type: string
+    platforms:
+      default: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
+      type: string
+    repo:
+      default: drpsychick
+      type: string
+    image:
+      default: dnsmasq
+      type: string
+    tag:
+      default: latest
+      type: string
+  - &docker-dind
+    - image: docker:dind
+  - &buildx
+    - checkout
+    - setup_remote_docker:
+        version: 20.10.14
+    - run:
+        name: Install buildx
+        command: |
+          apk add --no-cache curl git
+          mkdir -p ~/.docker/cli-plugins
+          fileName="buildx-<< parameters.buildx_version >>.linux-amd64"
+          url="<< parameters.buildx_url >>/download/<< parameters.buildx_version >>/${fileName}"
+          curl -sSL -o ~/.docker/cli-plugins/docker-buildx $url
+          chmod a+x ~/.docker/cli-plugins/docker-buildx
+          docker buildx install
+    - run:
+        name: Bootstrap buildx
+        command: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker context create xbuilder
+          docker buildx create xbuilder --name xbuilder --use
+          docker buildx inspect --bootstrap
+    - run:
+        name: Build and push images << parameters.alpine_version >>
+        command: |
+          # build all platforms
+          IMAGE=<< parameters.repo >>/<< parameters.image >>
+          TAG=<< parameters.alpine_version >>
+          docker buildx build --progress plain --platform << parameters.platforms >> \
+            --build-arg ALPINE_VERSION=<< parameters.alpine_version >> \
+            --tag $IMAGE:$TAG .
+          
+          # build & load amd64
+          docker buildx build --progress plain --platform linux/amd64 \
+            --build-arg ALPINE_VERSION=<< parameters.alpine_version >> \
+            --tag $IMAGE:$TAG --load .
+          
+          # get dnsmasq version
+          export DNSMASQ_VERSION=$(docker run --rm $IMAGE:$TAG --version |head -n1 |sed -e 's/Dnsmasq version \([0-9.]*\) *Copyright.*/\1/')
+          if [ "$TAG" != "latest" ]; then export TAG=$DNSMASQ_VERSION; fi
+
+          # login, build & push : master or "-dev"
+          if [ "${CIRCLE_BRANCH}" != "master" ]; then export TAG=${TAG}-dev; fi
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin &> /dev/null || exit 1
+          echo "Pushing $IMAGE:$TAG..."
+          docker buildx build --progress plain --platform << parameters.platforms >> \
+            --build-arg ALPINE_VERSION=<< parameters.alpine_version >> \
+            --tag $IMAGE:$TAG --push .
+
+jobs:
+  buildx:
+    parameters: *parameters
+    docker: *docker-dind
+    resource_class: small
+    steps: *buildx
+
+workflows:
+  version: 2
+  build-images:
+    jobs:
+      - buildx:
+          matrix:
+            parameters:
+              alpine_version: ["latest"]
+      - buildx:
+          matrix:
+            parameters:
+              alpine_version: ["3", "3.15", "3.16", "3.17", "edge"]
+
+  # build 'latest' weekly
+  weekly:
+    triggers:
+      - schedule:
+          # mondays, 6:03 am, UTC
+          cron: "3 6 * * 1"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - buildx:
+          matrix:
+            parameters:
+              alpine_version: ["latest"]
+      - buildx:
+          matrix:
+            parameters:
+              alpine_version: ["3", "edge"]
+
+  # build other tags monthly
+  monthly:
+    triggers:
+      - schedule:
+          # first day of month, 5:03 am, UTC
+          cron: "3 5 1 * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - buildx:
+          matrix:
+            parameters:
+              alpine_version: ["latest"]
+      - buildx:
+          matrix:
+            parameters:
+              alpine_version: ["3", "3.15", "3.16", "3.17", "edge"]
+
