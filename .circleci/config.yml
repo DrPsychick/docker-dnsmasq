@@ -4,7 +4,7 @@ version: 2.1
 aliases:
   - &parameters
     alpine_version:
-      default: latest
+      default: 3.17 # docker:library/alpine
       type: string
     buildx_url:
       default: https://github.com/docker/buildx/releases
@@ -63,9 +63,11 @@ aliases:
             --tag $IMAGE:$TAG --load .
           
           # get dnsmasq version
-          export DNSMASQ_VERSION=$(docker run --rm $IMAGE:$TAG --version |head -n1 |sed -e 's/Dnsmasq version \([0-9.]*\) *Copyright.*/\1/')
-          if [ "$TAG" != "latest" ]; then export TAG=$DNSMASQ_VERSION; fi
-
+          if [ "$TAG" != "latest" ]; then 
+            DNSMASQ_VERSION=$(docker run --rm $IMAGE:$TAG --version |head -n1 |sed -e 's/Dnsmasq version \([0-9.]*\) *Copyright.*/\1/')
+            export TAG=$DNSMASQ_VERSION; 
+          fi
+          
           # login, build & push : master or "-dev"
           if [ "${CIRCLE_BRANCH}" != "master" ]; then export TAG=${TAG}-dev; fi
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin &> /dev/null || exit 1
@@ -87,12 +89,11 @@ workflows:
     jobs:
       - buildx:
           matrix:
-            parameters:
-              alpine_version: ["latest"]
+            parameters: {}
       - buildx:
           matrix:
             parameters:
-              alpine_version: ["3", "3.15", "3.16", "3.17", "edge"]
+              alpine_version: ["latest", "3", "3.15", "3.16", "3.17", "edge"]
 
   # build 'latest' weekly
   weekly:
@@ -107,12 +108,11 @@ workflows:
     jobs:
       - buildx:
           matrix:
-            parameters:
-              alpine_version: ["latest"]
+            parameters: {}
       - buildx:
           matrix:
             parameters:
-              alpine_version: ["3", "edge"]
+              alpine_version: ["latest", "3", "edge"]
 
   # build other tags monthly
   monthly:
