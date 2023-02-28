@@ -4,7 +4,7 @@ version: 2.1
 aliases:
   - &parameters
     alpine_version:
-      default: 3.17 # docker:library/alpine
+      default: "3.17" # docker:library/alpine
       type: string
     buildx_url:
       default: https://github.com/docker/buildx/releases
@@ -127,10 +127,9 @@ workflows:
     jobs:
       - buildx:
           matrix:
-            parameters:
-              alpine_version: ["latest"]
+            parameters: {}
       - buildx:
           matrix:
             parameters:
-              alpine_version: ["3", "3.15", "3.16", "3.17", "edge"]
+              alpine_version: ["latest", "3", "3.15", "3.16", "3.17", "edge"]
 
