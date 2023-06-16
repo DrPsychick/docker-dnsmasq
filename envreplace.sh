@@ -43,5 +43,10 @@ if [ "$1" = "--export" ]; then
   exit 0
 fi
 
+echo "Compiled Configuration:"
+echo "===================="
+cat -n /etc/dnsmasq.conf
+echo "===================="
+
 dnsmasq "$@"
 
