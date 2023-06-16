@@ -45,7 +45,7 @@ fi
 
 echo "Compiled Configuration:"
 echo "===================="
-cat /etc/dnsmasq.conf
+cat -n /etc/dnsmasq.conf
 echo "===================="
 
 dnsmasq "$@"
