@@ -64,7 +64,6 @@ aliases:
           
           # get dnsmasq version
           if [ "$TAG" != "latest" ]; then
-            docker run --rm -t $IMAGE:$TAG --version
             DNSMASQ_VERSION="$(docker run --rm -t $IMAGE:$TAG --version |head -n1 |sed -e 's/Dnsmasq version \([0-9.]*\) *Copyright.*/\1/')"
             export TAG="$DNSMASQ_VERSION";
           fi
