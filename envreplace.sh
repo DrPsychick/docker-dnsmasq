@@ -50,5 +50,5 @@ if [ -n "$CONFIG_DEBUG" ]; then
   echo "===================="
 fi
 
-dnsmasq "$@"
+exec dnsmasq "$@"
 
