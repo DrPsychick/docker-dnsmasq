@@ -10,7 +10,7 @@ aliases:
       default: https://github.com/docker/buildx/releases
       type: string
     buildx_version:
-      default: v0.12.1 # github-releases:docker/buildx
+      default: v0.14.0 # github-releases:docker/buildx
       type: string
     platforms:
       default: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
@@ -45,7 +45,7 @@ aliases:
         command: |
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
           docker context create xbuilder
-          docker buildx create xbuilder --name xbuilder --use
+          docker buildx create xbuilder --use
           docker buildx inspect --bootstrap
     - run:
         name: Build and push images << parameters.alpine_version >>
