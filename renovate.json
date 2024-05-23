@@ -19,7 +19,7 @@
         "^.circleci/config.yml$"
       ],
       "matchStrings": [
-        "\\sdefault: \"?(?<currentValue>.*?)\"?, # (?<datasource>.*?):(?<depName>.*?)\\n",
+        "\\sdefault: \"?(?<currentValue>.*?)\"? # (?<datasource>.*?):(?<depName>.*?)\\n",
         "\\s- image: .*:(?<currentValue>.*?) # (?<datasource>.*?):(?<depName>.*?)\\n"
       ],
       "versioningTemplate": "docker"
