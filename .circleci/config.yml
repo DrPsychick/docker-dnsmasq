@@ -25,15 +25,14 @@ aliases:
       default: latest
       type: string
   - &docker-dind
-    - image: docker:dind
+    - image: cimg/deploy:2024.03 # docker:cimg/deploy
   - &buildx
     - checkout
     - setup_remote_docker:
-        version: 20.10.14
+        docker_layer_caching: true
     - run:
         name: Install buildx
         command: |
-          apk add --no-cache curl git
           mkdir -p ~/.docker/cli-plugins
           fileName="buildx-<< parameters.buildx_version >>.linux-amd64"
           url="<< parameters.buildx_url >>/download/<< parameters.buildx_version >>/${fileName}"
@@ -45,7 +44,7 @@ aliases:
         command: |
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
           docker context create xbuilder
-          docker buildx create xbuilder --use
+          docker buildx create xbuilder --name dnsmasq-builder --use
           docker buildx inspect --bootstrap
     - run:
         name: Build and push images << parameters.alpine_version >>
@@ -93,7 +92,7 @@ workflows:
       - buildx:
           matrix:
             parameters:
-              alpine_version: ["latest", "3", "3.15", "3.16", "3.17", "edge"]
+              alpine_version: ["latest", "3", "3.18", "3.19", "3.20", "edge"]
 
   # build 'latest' weekly
   weekly:
@@ -131,5 +130,5 @@ workflows:
       - buildx:
           matrix:
             parameters:
-              alpine_version: ["latest", "3", "3.15", "3.16", "3.17", "edge"]
+              alpine_version: ["latest", "3", "3.18", "3.19", "3.20", "edge"]
 
