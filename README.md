@@ -143,6 +143,7 @@ Make sure to use the VIP (`192.168.1.250` in this example) as DNS and DHCP liste
 
 ```shell
 # make sure to set the DNS and DHCP listen address to the VIP (DMQ_DHCP_DNS, DMQ_GLOBAL_LISTEN)
+echo "DMQ_GLOBAL_BIND=bind-dynamic" >> dnsmasq.env
 echo "DMQ_GLOBAL_LISTEN=listen-address=127.0.0.1,192.168.1.250" >> dnsmasq.env
 echo "DMQ_DHCP_DNS=dhcp-option=6,192.168.1.250,8.8.8.8,8.8.4.4" >> dnsmasq.env
 echo "KEEPALIVE_STATE=MASTER" >> dnsmasq.env
@@ -154,6 +155,7 @@ echo "KEEPALIVE_VIP=192.168.1.250" >> dnsmasq.env
 docker run ... # see above
 
 # for the backup, similarly with lower priority:
+echo "DMQ_GLOBAL_BIND=bind-dynamic" >> dnsmasq.env
 echo "DMQ_GLOBAL_LISTEN=listen-address=127.0.0.1,192.168.1.250" >> dnsmasq.env
 echo "DMQ_DHCP_DNS=dhcp-option=6,192.168.1.250,8.8.8.8,8.8.4.4" >> dnsmasq.env
 echo "KEEPALIVE_STATE=BACKUP" >> dnsmasq.env
