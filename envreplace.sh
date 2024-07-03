@@ -57,7 +57,7 @@ if [ -n "$KEEPALIVE_STATE" ]; then
   sed -i -e "s/KEEPALIVE_STATE/$KEEPALIVE_STATE/" -e "s/KEEPALIVE_PRIO/$KEEPALIVE_PRIO/" \
     -e "s/KEEPALIVE_PASS/$KEEPALIVE_PASS/" -e "s/KEEPALIVE_VIP/$KEEPALIVE_VIP/" \
     -e "s/KEEPALIVE_ID/$KEEPALIVE_ID/" /etc/keepalived/keepalived.conf
-  keepalived -P -n -D -l 2>&1 > /dev/stdout &
+  keepalived -P -n -l 2>&1 > /dev/stdout &
 fi
 
 exec dnsmasq "$@"

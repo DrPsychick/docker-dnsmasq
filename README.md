@@ -134,10 +134,12 @@ docker run ... --publish 192.168.1.253:53:53 ... (for every port)
 
 ## Failover with `keepalived`
 
-Setup two containers, each with an individual IP. Configure an additional VIP for `keepalived` and define which container
-is the master and which one is the backup.
+Setup two containers (on different hosts), each with an individual IP. Configure an additional VIP for `keepalived` and define which container
+is the master and which one is the backup. When the master fails, or you run docker updates etc, the backup will kick in
+and bring up the VIP and announce it in the network. Once the master is back up, it will take over again as it has a higher
+priority.
 
-Make sure to use the VIP as DNS and DHCP listen address for `dnsmasq`.
+Make sure to use the VIP (`192.168.1.250` in this example) as DNS and DHCP listen address for `dnsmasq`.
 
 ```shell
 # make sure to set the DNS and DHCP listen address to the VIP (DMQ_DHCP_DNS, DMQ_GLOBAL_LISTEN)
@@ -146,7 +148,7 @@ echo "DMQ_DHCP_DNS=dhcp-option=6,192.168.1.250,8.8.8.8,8.8.4.4" >> dnsmasq.env
 echo "KEEPALIVE_STATE=MASTER" >> dnsmasq.env
 echo "KEEPALIVE_PRIO=100" >> dnsmasq.env
 echo "KEEPALIVE_ID=21" >> dnsmasq.env
-echo "KEEPALIVE_PASS=S3cr3t" >> dnsmasq.env
+echo "KEEPALIVE_PASS=S3cr3t99" >> dnsmasq.env
 echo "KEEPALIVE_VIP=192.168.1.250" >> dnsmasq.env 
 
 docker run ... # see above
@@ -157,12 +159,13 @@ echo "DMQ_DHCP_DNS=dhcp-option=6,192.168.1.250,8.8.8.8,8.8.4.4" >> dnsmasq.env
 echo "KEEPALIVE_STATE=BACKUP" >> dnsmasq.env
 echo "KEEPALIVE_PRIO=99" >> dnsmasq.env
 echo "KEEPALIVE_ID=21" >> dnsmasq.env
-echo "KEEPALIVE_PASS=S3cr3t" >> dnsmasq.env
+echo "KEEPALIVE_PASS=S3cr3t99" >> dnsmasq.env
 echo "KEEPALIVE_VIP=192.168.1.250" >> dnsmasq.env
 
 docker run ... # see above
 ```
 
+Keepalived User Guide: https://readthedocs.org/projects/keepalived-pqa/downloads/pdf/latest/
 
 # Credits
 Automated build inspired by
