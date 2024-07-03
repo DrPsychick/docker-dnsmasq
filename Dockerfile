@@ -3,6 +3,7 @@ FROM alpine:$ALPINE_VERSION
 RUN apk --no-cache add dnsmasq keepalived
 
 COPY envreplace.sh dnsmasq.conf.tmpl healthcheck.sh default.env /
+COPY keepalived.conf /etc/keepalived/keepalived.conf
 RUN chmod +x /envreplace.sh /healthcheck.sh
 
 EXPOSE 53 53/udp 67/udp
