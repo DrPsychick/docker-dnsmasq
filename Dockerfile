@@ -1,6 +1,6 @@
 ARG ALPINE_VERSION=edge
 FROM alpine:$ALPINE_VERSION
-RUN apk --no-cache add dnsmasq
+RUN apk --no-cache add dnsmasq keepalived
 
 COPY envreplace.sh dnsmasq.conf.tmpl healthcheck.sh default.env /
 RUN chmod +x /envreplace.sh /healthcheck.sh
