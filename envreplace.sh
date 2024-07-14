@@ -50,5 +50,21 @@ if [ -n "$CONFIG_DEBUG" ]; then
   echo "===================="
 fi
 
+if [ -n "$KEEPALIVE_STATE" ]; then
+  echo "Enabling keepalived"
+  KEEPALIVE_PRIO=${KEEPALIVE_PRIO:-100}
+  KEEPALIVE_ID=${KEEPALIVE_ID:-21}
+  sed -i -e "s/KEEPALIVE_STATE/$KEEPALIVE_STATE/" -e "s/KEEPALIVE_PRIO/$KEEPALIVE_PRIO/" \
+    -e "s/KEEPALIVE_PASS/$KEEPALIVE_PASS/" -e "s/KEEPALIVE_VIP/$KEEPALIVE_VIP/" \
+    -e "s/KEEPALIVE_ID/$KEEPALIVE_ID/" /etc/keepalived/keepalived.conf
+
+  if [ -n "$(grep bind-dynamic /etc/dnsmasq.conf)" ]; then
+    echo "WARNING: 'bind-dynamic' should be enabled when using keeplived, so that dnsmasq binds to the VIP dynamically."
+  fi
+
+  rm -f /run/keepalived/*.pid
+  keepalived -P -n -l 2>&1 > /dev/stdout &
+fi
+
 exec dnsmasq "$@"
 
