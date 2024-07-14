@@ -58,7 +58,7 @@ if [ -n "$KEEPALIVE_STATE" ]; then
     -e "s/KEEPALIVE_PASS/$KEEPALIVE_PASS/" -e "s/KEEPALIVE_VIP/$KEEPALIVE_VIP/" \
     -e "s/KEEPALIVE_ID/$KEEPALIVE_ID/" /etc/keepalived/keepalived.conf
 
-  if [ -n "$(grep bind-dynamic /etc/dnsmasq.conf)" ]; then
+  if [ -z "$(grep bind-dynamic /etc/dnsmasq.conf)" ]; then
     echo "WARNING: 'bind-dynamic' should be enabled when using keeplived, so that dnsmasq binds to the VIP dynamically."
   fi
 
