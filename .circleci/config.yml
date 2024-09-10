@@ -10,7 +10,7 @@ aliases:
       default: https://github.com/docker/buildx/releases
       type: string
     buildx_version:
-      default: v0.16.2 # github-releases:docker/buildx
+      default: v0.17.0 # github-releases:docker/buildx
       type: string
     platforms:
       default: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
