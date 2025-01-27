@@ -25,7 +25,7 @@ aliases:
       default: latest
       type: string
   - &docker-dind
-    - image: cimg/deploy:2024.11 # docker:cimg/deploy
+    - image: cimg/deploy:2025.01 # docker:cimg/deploy
   - &buildx
     - checkout
     - setup_remote_docker:
