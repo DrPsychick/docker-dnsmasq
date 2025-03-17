@@ -24,5 +24,12 @@
       ],
       "versioningTemplate": "docker"
     }
-  ]
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "automerge": true
+    }
+  ],
+  "platformAutomerge": true
 }
