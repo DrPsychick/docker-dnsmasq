@@ -169,6 +169,17 @@ docker run ... # see above
 
 Keepalived User Guide: https://readthedocs.org/projects/keepalived-pqa/downloads/pdf/latest/
 
+### supported `keepalived` environment variables
+|name|description|comment|required/optional|potential values|default|
+|---|---|---|---|---|---|
+|`KEEPALIVE_ID`|virtual router id|keep the same for all members of the keepalived group|optional|numeric|`21`|
+|`KEEPALIVE_INTERFACE`|network interface|the name of the nic keepalived should listen on|optional|string|`eth0`|
+|`KEEPALIVE_PASS`|password|keep the same for all the members of the keepalived group|optional|string|`S3cr3t99`|
+|`KEEPALIVE_PRIO`|priority|this characterises which member of the group should be active, if the `MASTER` member is unavailable|optional|numeric|`100`|
+|`KEEPALIVE_STATE`|state|this characterises the member as either `MASTER` or `BACKUP`.|**required**|`MASTER`\|`BACKUP`|_none_|
+|`KEEPALIVE_VIP`|virtual ip address|the ip address to be shared for all members of the keepalived group|**required**|ip address|_none_|
+
+
 # Credits
 Automated build inspired by
 * https://medium.com/vaidikkapoor/managing-open-source-docker-images-on-docker-hub-using-travis-7fd33bc96d65
