@@ -4,7 +4,7 @@ version: 2.1
 aliases:
   - &parameters
     alpine_version:
-      default: "3.22" # docker:library/alpine
+      default: "3.23" # docker:library/alpine
       type: string
     buildx_url:
       default: https://github.com/docker/buildx/releases
