@@ -3,28 +3,6 @@
   "extends": [
     "config:base"
   ],
-  "enabledManagers": ["regex"],
-  "regexManagers": [
-    {
-      "fileMatch": [
-        "^.circleci/config.yml$"
-      ],
-      "matchStrings": [
-        "\\sdefault: (?<currentValue>.*?) # (?<datasource>.*?):(?<depName>.*?)\\n"
-      ],
-      "versioningTemplate": "semver"
-    },
-    {
-      "fileMatch": [
-        "^.circleci/config.yml$"
-      ],
-      "matchStrings": [
-        "\\sdefault: \"?(?<currentValue>.*?)\"? # (?<datasource>.*?):(?<depName>.*?)\\n",
-        "\\s- image: .*:(?<currentValue>.*?) # (?<datasource>.*?):(?<depName>.*?)\\n"
-      ],
-      "versioningTemplate": "docker"
-    }
-  ],
   "packageRules": [
     {
       "matchUpdateTypes": ["patch", "pin", "digest"],
