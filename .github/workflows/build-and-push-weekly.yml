@@ -11,4 +11,4 @@ jobs:
     name: Weekly builds
     uses: ./.github/workflows/reusable-build.yml
     with:
-      alpine_versions: '["3.23", "latest", "3", "edge"]'
+      alpine_versions: '["3.24", "3.23", "latest", "3", "edge"]'
