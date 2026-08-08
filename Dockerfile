@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=edge
+ARG ALPINE_VERSION=3
 FROM alpine:$ALPINE_VERSION
 RUN apk --no-cache add dnsmasq keepalived
 
