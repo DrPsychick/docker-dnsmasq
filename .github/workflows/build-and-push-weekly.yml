@@ -1,0 +1,14 @@
+# Weekly cron: Monday 06:03 UTC
+# Builds Alpine: 3.23, latest, 3, edge
+name: Weekly Build & Push
+
+on:
+  schedule:
+    - cron: '3 6 * * 1'
+
+jobs:
+  build:
+    name: Weekly builds
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      alpine_versions: '["3.24", "3.23", "latest", "3", "edge"]'

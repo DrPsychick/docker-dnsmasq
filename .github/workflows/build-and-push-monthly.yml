@@ -1,0 +1,14 @@
+# Monthly cron: 1st of month at 05:03 UTC
+# Builds Alpine: 3.23, latest, 3, 3.18, 3.19, 3.20, edge
+name: Monthly Build & Push
+
+on:
+  schedule:
+    - cron: '3 5 1 * *'
+
+jobs:
+  build:
+    name: Monthly builds
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      alpine_versions: '["3.24", "3.23", "latest", "3", "edge"]'
