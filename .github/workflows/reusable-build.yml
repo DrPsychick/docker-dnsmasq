@@ -46,7 +46,7 @@ jobs:
           driver: docker-container
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       - name: Build all platforms (cache only)
         uses: docker/build-push-action@v6
