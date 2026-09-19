@@ -13,3 +13,7 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     with:
       alpine_versions: '["3.24", "3.23", "latest", "3", "edge"]'
+      # Push only when this is a real push to the master branch.
+      # PR builds still run (build + version detection) but skip the push step.
+      push_image: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    secrets: inherit
