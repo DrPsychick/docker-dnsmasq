@@ -130,5 +130,5 @@ jobs:
           build-args: |
             ALPINE_VERSION=${{ matrix.alpine_version }}
           push: true
-          tags: "${DOCKER_REGISTRY}/${DOCKER_REPO}/${DOCKER_IMAGE}:${{ steps.detect.outputs.tag }}"
+          tags: "${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPO }}/${{ env.DOCKER_IMAGE }}:${{ steps.detect.outputs.tag }}"
           cache-from: type=gha
