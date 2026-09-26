@@ -18,3 +18,17 @@ for v in $(set | grep ^DMQ_DHCP | sed -e 's/^\(DMQ_DHCP[^=]*\).*/\1/' | sort -r 
   [ -z "$v" -o -z "$val" ] && continue
   echo -e "$val"
 done
+echo
+echo "### DMQ_TFTP*"
+for v in $(set | grep ^DMQ_TFTP | sed -e 's/^\(DMQ_TFTP[^=]*\).*/\1/' | sort -r | tr '\n', ' '); do
+  val=$(eval echo "\$$v")
+  [ -z "$v" -o -z "$val" ] && continue
+  echo -e "$val"
+done
+echo
+echo "### DMQ_PXE*"
+for v in $(set | grep ^DMQ_PXE | sed -e 's/^\(DMQ_PXE[^=]*\).*/\1/' | sort -r | tr '\n', ' '); do
+  val=$(eval echo "\$$v")
+  [ -z "$v" -o -z "$val" ] && continue
+  echo -e "$val"
+done
