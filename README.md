@@ -179,6 +179,56 @@ Keepalived User Guide: https://readthedocs.org/projects/keepalived-pqa/downloads
 |`KEEPALIVE_STATE`|state|this characterises the member as either `MASTER` or `BACKUP`.|**required**|`MASTER`\|`BACKUP`|_none_|
 |`KEEPALIVE_VIP`|virtual ip address|the ip address to be shared for all members of the keepalived group|**required**|ip address|_none_|
 
+## Network boot (TFTP) and optional HTTP server 
+
+The image includes dnsmasq's built-in TFTP server and an *optional* `lighttpd` HTTP server that serves
+the same boot directory. This lets PXE clients fetch small bootstraps over TFTP and large payloads
+(kernels, initramfs, install media) over HTTP, which is far faster than TFTP.
+
+### TFTP and PXE (`DMQ_TFTP` / `DMQ_PXE`)
+
+TFTP is enabled through `DMQ_TFTP`. The boot files have to be mounted into
+the container (e.g. `-v /srv/tftpboot:/srv/tftp:ro`). The following variables are supported:
+
+```
+DMQ_TFTP=enable-tftp\ntftp-root=/srv/tftp
+```
+
+`DMQ_PXE` is used to hand out the boot file to PXE clients, e.g. a UEFI/BIOS
+split with the next-server set to a virtual IP:
+
+```
+DMQ_PXE=dhcp-match=set:efi-x86_64,option:client-arch,7\ndhcp-boot=tag:efi-x86_64,loader.efi\ndhcp-boot=tag:!efi-x86_64,pxeboot\ndhcp-option=66,192.168.1.250
+```
+
+As with the other `DMQ_*` variables, multiple options are given in a single line separated by `\n`,
+which is expanded to newlines in the generated `dnsmasq.conf` (docker does not support multi-line
+environment variables).
+
+### Optional HTTP server (`lighttpd`)
+
+If `DMQ_TFTP` is enabled, an additional HTTP server can be turned on to serve the same directory over
+HTTP. This is useful when clients need to fetch large files (e.g. FreeBSD/USB images) and TFTP's default
+512-byte blocks are too slow.
+
+```
+DMQ_HTTP=enable
+DMQ_HTTP_PORT=8080
+DMQ_HTTP_ROOT=/srv/tftp
+```
+
+The HTTP server is only started if `DMQ_HTTP` is set **and** `DMQ_TFTP` contains `enable-tftp`. If the
+document root cannot be determined (`DMQ_HTTP_ROOT` or `tftp-root=` missing), or `lighttpd` fails to
+start, a warning is printed and dnsmasq continues without HTTP.
+
+### supported `DMQ_HTTP*` environment variables
+|name|description|comment|required/optional|potential values|default|
+|---|---|---|---|---|---|
+|`DMQ_HTTP`|enables the HTTP server|requires `enable-tftp` in `DMQ_TFTP`, otherwise it is skipped|optional|any non-empty value|_none_|
+|`DMQ_HTTP_PORT`|port `lighttpd` listens on|expose it with `--publish` to make it reachable|optional|numeric|`8080`|
+|`DMQ_HTTP_ROOT`|document root for the HTTP server|defaults to the `tftp-root=` value from `DMQ_TFTP`|optional|filesystem path|from `DMQ_TFTP`|
+|`DMQ_HTTP_BIND`|address `lighttpd` binds to|leave as `0.0.0.0` to listen on all interfaces|optional|ip address|`0.0.0.0`|
+
 
 # Credits
 Automated build inspired by

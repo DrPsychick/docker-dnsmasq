@@ -28,6 +28,18 @@ if [ "$1" = "--test" ]; then
     value=$(eval echo -n \""\$$v"\")
     echo -e "$v=\"$value\""
   done
+
+  if [ -n "$DMQ_HTTP" ]; then
+    case "$DMQ_TFTP" in
+      *enable-tftp*)
+        root=${DMQ_HTTP_ROOT:-$(printf '%s\n' "$DMQ_TFTP" | sed -n 's/.*\(tftp-root=\)\([^\\]*\).*/\2/p')}
+        echo "HTTP server enabled (DMQ_HTTP=$DMQ_HTTP, root=$root, bind=${DMQ_HTTP_BIND:-0.0.0.0}, port=${DMQ_HTTP_PORT:-8080})"
+        ;;
+      *)
+        echo "DMQ_HTTP set but TFTP not enabled - HTTP server will be skipped"
+        ;;
+    esac
+  fi
   exit 0
 fi
 
@@ -65,6 +77,46 @@ if [ -n "$KEEPALIVE_STATE" ]; then
 
   rm -f /run/keepalived/*.pid
   keepalived -P -n -l 2>&1 > /dev/stdout &
+fi
+
+# optional TFTP-over-HTTP server (lighttpd)
+if [ -n "$DMQ_HTTP" ]; then
+  case "$DMQ_TFTP" in
+    *enable-tftp*) ;;
+    *)
+      echo "DMQ_HTTP set but TFTP not enabled - skipping HTTP server"
+      DMQ_HTTP=""
+      ;;
+  esac
+fi
+
+if [ -n "$DMQ_HTTP" ]; then
+  # determine document root: explicit override, or derive from tftp-root= in DMQ_TFTP
+  HTTP_ROOT=$DMQ_HTTP_ROOT
+  if [ -z "$HTTP_ROOT" ]; then
+    HTTP_ROOT=$(printf '%s\n' "$DMQ_TFTP" | sed -n 's/.*\(tftp-root=\)\([^\\]*\).*/\2/p')
+  fi
+
+  if [ -z "$HTTP_ROOT" ]; then
+    echo "could not determine HTTP root - skipping HTTP server"
+  else
+    if cat > /etc/lighttpd/lighttpd.conf <<EOF
+server.document-root = "$HTTP_ROOT"
+server.port = $DMQ_HTTP_PORT
+server.bind = "$DMQ_HTTP_BIND"
+server.dir-listing = "disable"
+mimetype.assign = (".gz" => "application/gzip", ".efi" => "application/octet-stream", "" => "application/octet-stream")
+EOF
+    then
+      if lighttpd -f /etc/lighttpd/lighttpd.conf; then
+        echo "Starting optional TFTP-over-HTTP server on $DMQ_HTTP_BIND:$DMQ_HTTP_PORT serving $HTTP_ROOT"
+      else
+        echo "WARNING: failed to start lighttpd - continuing without HTTP server"
+      fi
+    else
+      echo "WARNING: could not write /etc/lighttpd/lighttpd.conf - continuing without HTTP server"
+    fi
+  fi
 fi
 
 exec dnsmasq "$@"
