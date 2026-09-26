@@ -14,3 +14,8 @@ if [ -n "$KEEPALIVE_STATE" -a -z "$(pgrep keepalived)" ]; then
   echo "keepalived configured but not running!"
   exit 1
 fi
+
+if [ -n "$DMQ_HTTP" -a -z "$(pgrep lighttpd)" ]; then
+  echo "lighttpd configured but not running!"
+  exit 1
+fi
