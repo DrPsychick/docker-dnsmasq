@@ -219,7 +219,8 @@ DMQ_HTTP_ROOT=/srv/tftp
 
 The HTTP server is only started if `DMQ_HTTP` is set **and** `DMQ_TFTP` contains `enable-tftp`. If the
 document root cannot be determined (`DMQ_HTTP_ROOT` or `tftp-root=` missing), or `lighttpd` fails to
-start, a warning is printed and dnsmasq continues without HTTP.
+start, a warning is printed and dnsmasq continues without HTTP. When enabled, HTTP access and error
+logs are streamed to the container's stdout, so they show up in `docker logs`.
 
 ### supported `DMQ_HTTP*` environment variables
 |name|description|comment|required/optional|potential values|default|

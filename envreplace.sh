@@ -101,17 +101,23 @@ if [ -n "$DMQ_HTTP" ]; then
     echo "could not determine HTTP root - skipping HTTP server"
   else
     if cat > /etc/lighttpd/lighttpd.conf <<EOF
+server.modules = ("mod_access", "mod_accesslog")
 server.document-root = "$HTTP_ROOT"
 server.port = $DMQ_HTTP_PORT
 server.bind = "$DMQ_HTTP_BIND"
-server.dir-listing = "disable"
+accesslog.filename = "/dev/stderr"
+server.errorlog = "/dev/stderr"
 mimetype.assign = (".gz" => "application/gzip", ".efi" => "application/octet-stream", "" => "application/octet-stream")
 EOF
     then
-      if lighttpd -f /etc/lighttpd/lighttpd.conf; then
-        echo "Starting optional TFTP-over-HTTP server on $DMQ_HTTP_BIND:$DMQ_HTTP_PORT serving $HTTP_ROOT"
+      lighttpd -D -f /etc/lighttpd/lighttpd.conf &
+      HTTP_PID=$!
+      sleep 1
+      if kill -0 "$HTTP_PID" 2>/dev/null; then
+        echo "Starting optional TFTP-over-HTTP server on $DMQ_HTTP_BIND:$DMQ_HTTP_PORT serving $HTTP_ROOT (pid $HTTP_PID)"
       else
-        echo "WARNING: failed to start lighttpd - continuing without HTTP server"
+        wait "$HTTP_PID" 2>/dev/null || true
+        echo "WARNING: lighttpd failed to start - continuing without HTTP server"
       fi
     else
       echo "WARNING: could not write /etc/lighttpd/lighttpd.conf - continuing without HTTP server"
