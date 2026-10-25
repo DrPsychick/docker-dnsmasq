@@ -3,6 +3,19 @@ set -e
 
 . default.env
 
+# KEEPALIVED_ENABLED: explicit enable/disable switch for keepalived.
+#  1|yes|true|on (any case)  -> ENABLED
+#  0|no|false|off (any case) -> DISABLED (hard override)
+#  unset/empty/unrecognized  -> legacy: enabled iff KEEPALIVE_STATE is non-empty
+# NOTE: mirrored in /healthcheck.sh - keep in sync
+keepalived_enabled() {
+  case "${KEEPALIVED_ENABLED:-}" in
+    1|yes|true|on|YES|TRUE|ON|Yes|True|On) return 0 ;;
+    0|no|false|off|NO|FALSE|OFF|No|False|Off) return 1 ;;
+    *) [ -n "$KEEPALIVE_STATE" ] ;;
+  esac
+}
+
 # generate configuration files from templates
 for tmpl in ${conf_templates}; do
   # do not generate config, if file or directory is mounted into the container
@@ -62,14 +75,24 @@ if [ -n "$CONFIG_DEBUG" ]; then
   echo "===================="
 fi
 
-if [ -n "$KEEPALIVE_STATE" ]; then
+if keepalived_enabled; then
   echo "Enabling keepalived"
   KEEPALIVE_PRIO=${KEEPALIVE_PRIO:-100}
   KEEPALIVE_ID=${KEEPALIVE_ID:-21}
   KEEPALIVE_INTERFACE=${KEEPALIVE_INTERFACE:-eth0}
-  sed -i -e "s/KEEPALIVE_STATE/$KEEPALIVE_STATE/" -e "s/KEEPALIVE_PRIO/$KEEPALIVE_PRIO/" \
-    -e "s/KEEPALIVE_PASS/$KEEPALIVE_PASS/" -e "s/KEEPALIVE_VIP/$KEEPALIVE_VIP/" \
-    -e "s/KEEPALIVE_ID/$KEEPALIVE_ID/" -e "s/KEEPALIVE_INTERFACE/$KEEPALIVE_INTERFACE/" /etc/keepalived/keepalived.conf
+  KEEPALIVE_CONF=${KEEPALIVE_CONF:-/etc/keepalived/keepalived.conf}
+  if [ -n "$(mount | grep "$KEEPALIVE_CONF")" -o -n "$(mount | grep "$(basename "$KEEPALIVE_CONF")")" ]; then
+    echo "NOT overwriting mounted configuration file: $KEEPALIVE_CONF"
+  else
+    sed -i -e "s/KEEPALIVE_STATE/$KEEPALIVE_STATE/" -e "s/KEEPALIVE_PRIO/$KEEPALIVE_PRIO/" \
+      -e "s/KEEPALIVE_PASS/$KEEPALIVE_PASS/" -e "s/KEEPALIVE_VIP/$KEEPALIVE_VIP/" \
+      -e "s/KEEPALIVE_ID/$KEEPALIVE_ID/" -e "s/KEEPALIVE_INTERFACE/$KEEPALIVE_INTERFACE/" "$KEEPALIVE_CONF"
+  fi
+
+  if ! keepalived -t -f "$KEEPALIVE_CONF" >&2; then
+    echo "ERROR: keepalived configuration check failed - aborting ($KEEPALIVE_CONF)" >&2
+    exit 1
+  fi
 
   if [ -z "$(grep bind-dynamic /etc/dnsmasq.conf)" ]; then
     echo "WARNING: 'bind-dynamic' should be enabled when using keeplived, so that dnsmasq binds to the VIP dynamically."

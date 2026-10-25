@@ -169,14 +169,29 @@ docker run ... # see above
 
 Keepalived User Guide: https://readthedocs.org/projects/keepalived-pqa/downloads/pdf/latest/
 
+### Custom keepalived configuration (mount)
+
+Mount your own configuration file over `/etc/keepalived/keepalived.conf`, e.g.:
+
+```shell
+docker run ... -v ./keepalived.conf:/etc/keepalived/keepalived.conf:ro
+```
+
+When the file is mounted, it is used verbatim and `envreplace.sh` will NOT modify it (no `KEEPALIVE_*` token substitution).
+
+Keepalived starts when `KEEPALIVED_ENABLED=1` is set (or, legacy, when `KEEPALIVE_STATE` is set). `KEEPALIVED_ENABLED=0` forces keepalived off even if `KEEPALIVE_STATE` is set.
+
+The mounted file wins over all `KEEPALIVE_*` variables except the enable flag.
+
 ### supported `keepalived` environment variables
 |name|description|comment|required/optional|potential values|default|
 |---|---|---|---|---|---|
+|`KEEPALIVED_ENABLED`|explicitly enable/disable keepalived|overrides `KEEPALIVE_STATE`; unset = legacy (uses `KEEPALIVE_STATE`)|optional|`1`\|`0` (also `yes`/`no`, `true`/`false`, `on`/`off`)|_legacy: enabled when `KEEPALIVE_STATE` set_|
 |`KEEPALIVE_ID`|virtual router id|keep the same for all members of the keepalived group|optional|numeric|`21`|
 |`KEEPALIVE_INTERFACE`|network interface|the name of the nic keepalived should listen on|optional|string|`eth0`|
 |`KEEPALIVE_PASS`|password|keep the same for all the members of the keepalived group|optional|string|`S3cr3t99`|
 |`KEEPALIVE_PRIO`|priority|this characterises which member of the group should be active, if the `MASTER` member is unavailable|optional|numeric|`100`|
-|`KEEPALIVE_STATE`|state|this characterises the member as either `MASTER` or `BACKUP`.|**required**|`MASTER`\|`BACKUP`|_none_|
+|`KEEPALIVE_STATE`|state|required only when using the built-in template conf (i.e. not mounting a custom one); with a mounted conf use `KEEPALIVED_ENABLED`|optional|`MASTER`\|`BACKUP`|_none_|
 |`KEEPALIVE_VIP`|virtual ip address|the ip address to be shared for all members of the keepalived group|**required**|ip address|_none_|
 
 ## Network boot (TFTP) and optional HTTP server 
